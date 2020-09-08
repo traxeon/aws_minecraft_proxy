@@ -24,7 +24,7 @@ Stage 1:
 1. Sign up for an Amazon AWS Account
 2. Search for EC2 (Virtual Servers in the Cloud)
 
-![fb3044a75aa801df2919bd4adb0aa83e.png](../../_resources/349533a8040e492b9be1df389736ab97.png)
+![fb3044a75aa801df2919bd4adb0aa83e.png](../../blob/master/_resources/349533a8040e492b9be1df389736ab97.png)
 
 3. Select Launch Instance
 
