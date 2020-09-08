@@ -3,7 +3,7 @@ AWS Proxy
 
 ## Setup AWS as a Proxy Server to protect a home Linux Minecraft server ## 
 * * *
-Note: These instructions focus on the AWS proxy server and do not cover setting up the Minecraft server itself. 
+Note: These instructions focus on the AWS proxy server and do not cover setting Stage up the Minecraft server itself. 
 
 The advantage of using a free instance of an AWS compute node as a proxy is that the instance inherits the reliability and resilience of Amazon cloud service.  The instance is not likely to go offline and the network protections can prevent DDoS and other attacks on the home network.
 
@@ -219,7 +219,7 @@ By not publishing your home ip address for your Minecraft server, it reduced the
 ## Logical View
 Note: The following view does not represent the actual routing of traffic, but rather reflects the logical flow. 
 
-![cd3cab71d8149706d54f4fdf5ddd19e3.png](../../_resources/a78f441206894d3d9e3dc61838f0c150.png)
+![cd3cab71d8149706d54f4fdf5ddd19e3.png](../../blob/master/_resources/a78f441206894d3d9e3dc61838f0c150.png)
 
 
 
