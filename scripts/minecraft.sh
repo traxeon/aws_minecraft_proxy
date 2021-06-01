@@ -1,16 +1,25 @@
 #!/usr/bin/bash
-SERVER='10.1.1.203'
-MCUSER='minecraft'
+
+# This code works with the systemd startup that accompanies the script.
+# The mc-  prefix pre-pends the directory to identify the 'screen' process
+# The ts command is used on echo statements to pre-pend the time stamp.  The command must be installed on the system.
+
+SERVER='<server_ip>'
+MCUSER='<daemon_owner>'
 MCPATH='/var/games/minecraft'
 BACKUPPATH='/mnt/backup/minecraft'
 
+# Path for the directory of the server
 MCDIR=$1
+# Command to execute
 MCCOMMAND=$2
+# Identifier for the screen process
 MCSERVER="mc-${MCDIR}"
 
-# error handling when a command fails
+# error handling when a command fails - line number display
 PS4='LINENO:'
 
+# verify that all variables were provided
 if [[ -z $1 || -z $2 ]]; then
 	echo "Incorrect syntax provided" | ts
 	echo "Proper syntax: <script> <mcdir> <mccommand>" | ts
