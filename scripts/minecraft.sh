@@ -27,7 +27,7 @@ if [[ -z $1 || -z $2 ]]; then
 fi
 
 mcsaveoff(){
-	if pgrep --full ${MCSERVER} > /dev/null
+	if pgrep -a --full ${MCSERVER} > /dev/null
 	then
 	  echo "${MCSERVER}: Active. Suspending saves" | ts
 	  screen -p 0 -S ${MCSERVER} -X eval 'stuff "say Disabling saves"\015'
@@ -42,7 +42,7 @@ mcsaveoff(){
 }
 
 mcsaveon(){
-        if pgrep --full ${MCSERVER} > /dev/null
+        if pgrep -a --full ${MCSERVER} > /dev/null
         then
           echo "${MCSERVER}: Active. Enabling saves" | ts
           screen -p 0 -S ${MCSERVER} -X eval 'stuff "say Enabling saves"\015'
@@ -57,7 +57,7 @@ mcsaveon(){
 }
 
 mcbackup(){
-        if pgrep --full ${MCSERVER} > /dev/null
+        if pgrep -a --full ${MCSERVER} > /dev/null
         then
           echo "${MCSERVER}: Activating Backup Job" | ts
 	  screen -p 0 -S ${MCSERVER} -X eval 'stuff "say Backup job beginning"\015'
