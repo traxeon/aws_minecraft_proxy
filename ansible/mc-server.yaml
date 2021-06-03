@@ -1,0 +1,69 @@
+- hosts: mcservers
+
+  vars:
+    base_source_path: /var/games/minecraft/_core/
+    base_install_path: /var/games/minecraft/
+    serverjar: paper-1.16.5-753.jar
+
+  vars_prompt:
+  - name: mcdir
+    prompt: Specify server directory
+    private: no
+  - name: server_port
+    prompt: Specify server port
+    private: no
+
+  tasks:
+  - name: create minecraft server directory
+    file:
+      path: "{{ base_install_path }}{{ mcdir }}"
+      state: directory
+      mode: "u=rwx,g=rwx,o="
+  
+  - name: clone minecraft reference base
+    copy:
+      src: "{{ base_source_path }}"
+      dest: "{{ base_install_path }}{{ mcdir }}"
+      owner: "{{ ansible_user_id }}"
+      group: "{{ ansible_user_gid }}"
+      mode: 0640
+  
+  - name: server properties template for server
+    template:
+      src: "server.properties.j2"
+      dest: "{{ base_install_path }}{{ mcdir }}/server.properties"
+  
+  - name: create symlink to specific server jar for startup
+    file:
+      src: "{{ base_install_path }}{{ mcdir }}/{{ serverjar }}"
+      path: "{{ base_install_path }}{{ mcdir }}/server.jar"
+      state: link
+  
+  - name: create host firewall rule for this server
+    community.general.ufw:
+      rule: allow
+      port: "{{ server_port }}"
+      proto: tcp
+      comment: "Minecraft Server {{ mcdir }}"
+    become: yes
+  
+  - name: reload firewall with new rules
+    community.general.ufw:
+      state: reloaded
+    become: yes
+  
+  - name: create cron job for backups
+    ansible.builtin.cron:
+      name: "{{ mcdir }} backup"
+      minute: "45"
+      hour: "03"
+      job: "/etc/cron.d/minecraft.sh {{ mcdir }} backup"
+  
+  - name: enable minecraft server startup service
+    service:
+      name: "minecraft@{{ mcdir }}"
+      state: started
+      enabled: yes
+      masked: no
+      daemon_reload: yes
+    become: yes

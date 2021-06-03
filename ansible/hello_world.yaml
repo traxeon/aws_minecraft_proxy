@@ -1,0 +1,6 @@
+- name: My_Task
+  hosts: all
+  tasks:
+     - name: Leaving a mark
+       command: "touch /tmp/hello_ansible_world"
+       changed_when: false
