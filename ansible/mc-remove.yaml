@@ -1,8 +1,4 @@
-# Usage: ansible-playbook -K mc-deploy.yaml
-#
-# Make sure the directory and port are not in use prior to installation
-# by checking the base paths defined (do these checks in ansible in the future)
-# make sure [mcserver] is defined in /etc/ansible/hosts
+# Usage: ansible-playbook -K mc-remove.yaml
 
 - hosts: mcservers
 
@@ -20,6 +16,11 @@
     private: no
 
   tasks:
+
+  - name: backup server before removal
+    command: "/etc/cron.d/minecraft.sh {{ mcdir }} backup"
+    changed_when: false
+
   - name: stop minecraft server service$
     service:
       name: "minecraft@{{ mcdir }}"
@@ -49,10 +50,6 @@
       hour: "03"
       job: "/etc/cron.d/minecraft.sh {{ mcdir }} backup"
       state: absent
-
-  - name: backup server before removal
-    command: "/etc/cron.d/minecraft.sh {{ mcdir }} backup"
-    changed_when: false
 
   - name: remove server files
     file:
