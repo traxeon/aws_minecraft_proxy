@@ -4,10 +4,12 @@
 # by checking the base paths defined (do these checks in ansible in the future)
 # make sure [mcserver] is defined in /etc/ansible/hosts
 
-- hosts: mcservers
+- hosts: localhost
+  connection: local
 
   vars:
-    base_source_path: /var/games/minecraft/_core/
+    base_source_dir: /tmp/minecraft/
+    base_source: "{{ base_source_dir }}/baseimage/"
     base_install_path: /var/games/minecraft/
     serverjar: paper-1.16.5-753.jar
 
@@ -20,6 +22,12 @@
     private: no
 
   tasks:
+
+  - name: Retrieve the base image$
+    ansible.builtin.git:
+      repo: git@github.com:traxeon/mcbase.git
+      dest: "{{ base_source_dir }}"
+
   - name: create minecraft server directory
     file:
       path: "{{ base_install_path }}{{ mcdir }}"
@@ -28,7 +36,7 @@
 
   - name: clone minecraft reference base
     copy:
-      src: "{{ base_source_path }}"
+      src: "{{ base_source }}"
       dest: "{{ base_install_path }}{{ mcdir }}"
       owner: "{{ ansible_user_id }}"
       group: "{{ ansible_user_gid }}"
@@ -73,3 +81,8 @@
       masked: no
       daemon_reload: yes
     become: yes
+
+  - name: cleanup base temp base image location
+    file:
+      path: "{{ base_source_dir }}"
+      state: absent
