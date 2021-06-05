@@ -1,0 +1,54 @@
+- hosts: localhost
+  connection: local
+  become: no
+
+  vars:
+    fpath: /tmp/minecraft/
+    baseurl_pmc: https://papermc.io/api/v2/projects/paper/versions/
+    version_pmc: 1.16.5
+
+  tasks:
+
+    - name: get json result for build value
+      uri:
+        url: "{{ baseurl_pmc }}{{ version_pmc }}"
+        method: GET
+        return_content: yes
+        status_code: 200
+        body_format: json
+      register: bresult
+
+    - name: get latest build number
+      set_fact:
+        bnum: "{{ bresult.json.builds| last }}"
+
+    - name: get json result for filename
+      uri:
+        url: "{{ baseurl_pmc }}{{ version_pmc }}/builds/{{ bnum }}"
+        method: GET
+        return_content: yes
+        status_code: 200
+        body_format: json
+      register: fresult
+
+    - name: set filename to retrieve
+      set_fact:
+        fname: "{{ fresult.json.downloads.application.name }}"
+        fhash: "{{ fresult.json.downloads.application.sha256 }}"
+
+    - name: create destination path
+      file:
+        path: "{{ fpath }}"
+        state: directory
+
+    - name: create plugins directory
+      file:
+        path: "{{ fpath }}/plugins"
+        state: directory
+
+
+    - name: retrieve latest papermc server build
+      get_url:
+        url: "{{ baseurl_pmc }}{{ version_pmc }}/builds/{{ bnum }}/downloads/{{ fname }}"
+        dest: "{{ fpath }}"
+        checksum: "sha256: {{ fhash }}"
