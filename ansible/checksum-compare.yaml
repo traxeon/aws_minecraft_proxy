@@ -1,0 +1,20 @@
+- hosts: test-server
+  tasks:
+    - stat:
+        path: "{{ item }}"
+        checksum_algorithm: sha1
+      delegate_to: localhost
+      with_fileglob: /tmp/*.dat
+      register: local_files
+    - stat:
+        path: "/tmp/{{ item.stat.path | basename }}"
+        checksum_algorithm: sha1
+      failed_when: remote_files.stat.checksum != item.stat.checksum
+      # failed_when condition checked after every iteration
+      #   and remote_files here is a result of individual task
+      #   but after loop is finished, remote_files is a cobination
+      #   of all iterations results
+      with_items: "{{ local_files.results }}"
+      register: remote_files
+      loop_control:
+        label: "{{ item.stat.path | basename }}"

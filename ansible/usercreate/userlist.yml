@@ -1,0 +1,13 @@
+#sample:
+##user matching job role mentioned in create-user.yml playbook will be created
+
+
+    - users:
+            - name: "user1"
+              job: "developer"
+    
+            - name: "user2"
+              job: "devops"
+    
+            - name: "user3"
+              job: "developer"

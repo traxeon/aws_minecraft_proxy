@@ -55,6 +55,26 @@
         state: present
         update_password: on_create
 
+    - name: check pubkey integrity
+      stat: 
+        path: pubkey/authorized_keys
+        checksum_algorithm: sha256
+        get_checksum: true
+      register: result
+      failed_when: result.stat.checksum != "21eb1478c4972bcd9d3aae9054117795f2a033bb5366865382c3c9d26f67b067"
+      tags: pubkey
+
+    - name: debug - checksum of the authorized_key
+      debug: 
+        msg: "{{ result }}"
+      tags: [never, debug, pubkey]
+
+    - name: install pubkey
+      copy:
+        src: pubkey/authorized_keys
+        dest: "/home/{{ uname }}//.ssh/"
+      tags: pubkey
+
     # Use the --tags=remove options to call just this function to remove a user
     - name: remove user
       user:

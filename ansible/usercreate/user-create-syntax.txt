@@ -1,0 +1,6 @@
+ansible-vault create secret.yml
+#sample:
+user_password: mypass@155
+
+
+ansible-playbook -i inventory  user-create.yml  --ask-vault-pass

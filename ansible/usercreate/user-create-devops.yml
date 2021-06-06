@@ -1,0 +1,33 @@
+   - hosts: appserver1
+      vars_files: 
+        - secret.yml
+        - userlist.yml
+    
+      tasks:
+        - name: "create group" 
+          group:
+            name: "{{ item  }}"  
+          loop: 
+              - "dev"
+              - "devops"
+          
+        - name: "create user when Job=developer from userlist.yml file with password from secret.yml file and add to secondary group 'dev' "
+          user: 
+            name: "{{ item['name'] }}"
+            password: "{{ user_password | password_hash('sha512')  }}"   
+            update_password: on_create 
+            groups: "dev"
+            append: yes
+          loop: "{{ users }}"
+          when: "item['job'] == 'developer'"
+    
+    
+        - name: "create user when Job=devops from userlist.yml file with password from secret.yml file and add to secondary group 'devops' "
+          user:
+            name: "{{ item['name']  }}"
+            password: "{{ user_password | password_hash('sha512')  }}"
+            update_password: on_create
+            groups: "devops"
+            append: yes
+          loop: "{{ users }}"
+          when: "item['job'] == 'devops'"
