@@ -1,0 +1,5 @@
+- name: Refresh server jar and plugins to latest version
+  hosts: localhost
+  connection: local
+
+- import_playbook: mc-papermc.yaml

@@ -1,0 +1,65 @@
+- name: create users and groups
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: true
+  vars:
+    uname: minecraft
+    ugroup: minecraft
+    floc_bash: "/usr/bin/bash"
+
+  vars_prompt:
+    name: upass
+    prompt: "Enter the password for {{ uname }}"
+    unsafe: true
+
+  tasks:
+
+    - name: debug - host variables
+      debug:
+        var: hostvars[inventory_hostname]
+      tags: [never, debug]
+
+    - name: debug - application variables
+      debug:
+        msg: |
+          uname: "{{ uname }}"
+          ugroup: "{{ ugroup }}"
+      tags: [never, debug]
+
+    - name: create group
+      group:
+        name: "{{ ugroup }}"
+        state: present
+
+    - name: get bash location
+      shell:
+        cmd: "which bash"
+      register: "floc_bash"
+      changed_when: false
+      tags: [never,bash]
+
+    - name: debug - display bash location
+      debug:
+        msg: "floc_bash"
+      changed_when: false
+      tags: [never, debug]
+
+    - name: create user
+      user:
+        name: "{{ uname }}"
+        password: "{{ upass | password_hash('sha512',65534|random(seed=inventory_hostname)|string) }}"
+        shell: "{{ floc_bash }}"
+        group: "{{ ugroup }}"
+        comment: "Minecraft Administrator"
+        state: present
+        update_password: on_create
+
+    # Use the --tags=remove options to call just this function to remove a user
+    - name: remove user
+      user:
+        name: "{{ uname }}"
+        state: absent
+        remove: yes
+      tags: [never, remove]
+

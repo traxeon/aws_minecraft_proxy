@@ -1,4 +1,4 @@
-- name: My_Task
+- name: hellow_world_task
   hosts: all
   tasks:
      - name: Leaving a mark

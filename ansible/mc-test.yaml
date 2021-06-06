@@ -1,0 +1,31 @@
+- hosts: localhost
+  connection: local
+  become: no
+
+  vars:
+    fpath: /tmp/minecraft/plugins
+    baseurl_esx: https://ci.ender.zone/job/EssentialsX/lastStableBuild/artifact/jars/
+
+
+  tasks:
+
+    - name: get url result
+      uri:
+        url: "{{ baseurl_esx }}"
+        method: GET
+        return_content: yes
+        status_code: 200
+        body_format: raw
+      register: result
+
+    - name: get download link
+      shell: |
+        wget -O - "{{ baseurl_esx }}" | grep '^EssentialsX'
+      register: web
+      args:
+        warn: False
+      changed_when: false
+
+    - debug:
+        msg: "{{ web.stdout}}"
+

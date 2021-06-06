@@ -9,7 +9,7 @@
 
   vars_prompt:
   - name: mcdir
-    prompt: Specify server directory
+    prompt: Specify server directory title (not the full path)
     private: no
   - name: server_port
     prompt: Specify server port
@@ -17,9 +17,13 @@
 
   tasks:
 
+  - name: check that server is listening
+    port: "{{ server_port }}
+
   - name: backup server before removal
     command: "/etc/cron.d/minecraft.sh {{ mcdir }} backup"
     changed_when: false
+    tags: backup
 
   - name: stop minecraft server service$
     service:
@@ -29,6 +33,11 @@
       masked: no
     become: yes
 
+  - name: chedk that server has stopped
+    port: "{{ server_port }}"
+    delay: 35
+    state: drained
+
   - name: delete host firewall rule for this server
     community.general.ufw:
       delete: yes
@@ -37,11 +46,13 @@
       proto: tcp
       comment: "Minecraft Server {{ mcdir }}"
     become: yes
+    tags: firewall
 
   - name: reload firewall with new rules
     community.general.ufw:
       state: reloaded
     become: yes
+    tags: firewall
 
   - name: delete cron job for backups
     ansible.builtin.cron:
@@ -50,6 +61,7 @@
       hour: "03"
       job: "/etc/cron.d/minecraft.sh {{ mcdir }} backup"
       state: absent
+    tags: cron
 
   - name: remove server files
     file:
