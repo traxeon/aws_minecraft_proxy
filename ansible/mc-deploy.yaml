@@ -20,6 +20,8 @@
   - name: server_port
     prompt: Specify server port
     private: no
+  - name: srv_title
+    prompt: Specify the Minecraft Server Title
 
   tasks:
 
