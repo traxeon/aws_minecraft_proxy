@@ -1,3 +1,6 @@
+# Update the base image for server deployments
+# currently only handles the server jar
+
 - name: Refresh server jar and plugins to latest version
   hosts: localhost
   connection: local
