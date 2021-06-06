@@ -12,6 +12,7 @@
     base_source: "{{ base_source_dir }}/baseimage/"
     base_install_path: /var/games/minecraft/
     serverjar: paper-1.16.5-753.jar
+    addr_host: 10.1.1.203
 
   vars_prompt:
   - name: mcdir
@@ -22,8 +23,21 @@
     private: no
   - name: srv_title
     prompt: Specify the Minecraft Server Title
+    private: no
 
   tasks:
+
+  - name: check for open server port
+    wait_for:
+      host: "{{ addr_host }}"
+      port: "{{ server_port }}"
+      state: stopped
+      delay: 0
+      timeout: 3
+      msg: "Port is in use"
+    register: port_check
+    ignore_errors: no
+    tags: netcheck
 
   - name: Retrieve the base image$
     ansible.builtin.git:
